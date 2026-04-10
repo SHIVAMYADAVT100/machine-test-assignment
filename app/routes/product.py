@@ -4,16 +4,16 @@ from app.db.database import get_db
 from app.models.product import Product
 from app.schemas.product import ProductCreate
 
-router = APIRouter(prefix="/api/products")
+router = APIRouter(prefix="/api/products", tags=["Products"])
 
-# Pagination
+# Get all products
 @router.get("")
 def get_products(page: int = 1, db: Session = Depends(get_db)):
     limit = 5
     skip = (page - 1) * limit
     return db.query(Product).offset(skip).limit(limit).all()
 
-# Create
+# Create product
 @router.post("")
 def create_product(data: ProductCreate, db: Session = Depends(get_db)):
     product = Product(**data.dict())
@@ -22,12 +22,12 @@ def create_product(data: ProductCreate, db: Session = Depends(get_db)):
     db.refresh(product)
     return product
 
-# Get with category
+# Get product by id
 @router.get("/{id}")
 def get_product(id: int, db: Session = Depends(get_db)):
     return db.query(Product).filter(Product.id == id).first()
 
-# Update
+# Update product
 @router.put("/{id}")
 def update_product(id: int, data: ProductCreate, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == id).first()
@@ -36,7 +36,7 @@ def update_product(id: int, data: ProductCreate, db: Session = Depends(get_db)):
     db.commit()
     return product
 
-# Delete
+# Delete product
 @router.delete("/{id}")
 def delete_product(id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == id).first()

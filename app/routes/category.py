@@ -4,16 +4,16 @@ from app.db.database import get_db
 from app.models.category import Category
 from app.schemas.category import CategoryCreate
 
-router = APIRouter(prefix="/api/categories")
+router = APIRouter(prefix="/api/categories", tags=["Categories"])
 
-# Pagination GET
+# Get all categories
 @router.get("")
 def get_categories(page: int = 1, db: Session = Depends(get_db)):
     limit = 5
     skip = (page - 1) * limit
     return db.query(Category).offset(skip).limit(limit).all()
 
-# Create
+# Create category
 @router.post("")
 def create_category(data: CategoryCreate, db: Session = Depends(get_db)):
     category = Category(name=data.name)
@@ -22,12 +22,12 @@ def create_category(data: CategoryCreate, db: Session = Depends(get_db)):
     db.refresh(category)
     return category
 
-# Get by ID
+# Get category by id
 @router.get("/{id}")
 def get_category(id: int, db: Session = Depends(get_db)):
     return db.query(Category).filter(Category.id == id).first()
 
-# Update
+# Update category
 @router.put("/{id}")
 def update_category(id: int, data: CategoryCreate, db: Session = Depends(get_db)):
     category = db.query(Category).filter(Category.id == id).first()
@@ -35,7 +35,7 @@ def update_category(id: int, data: CategoryCreate, db: Session = Depends(get_db)
     db.commit()
     return category
 
-# Delete
+# Delete category
 @router.delete("/{id}")
 def delete_category(id: int, db: Session = Depends(get_db)):
     category = db.query(Category).filter(Category.id == id).first()
